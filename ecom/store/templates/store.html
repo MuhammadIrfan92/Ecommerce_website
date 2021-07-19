@@ -1,0 +1,53 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .column {
+        float: left;
+      }
+      
+      .left, .right {
+        width: 10%;
+      }
+      
+      .middle {
+        width: 80%;
+      }
+      .card-img{
+        width: 100%;
+        height: 70%;
+        object-fit: cover;
+    }
+</style>
+
+    <div class="row">
+        
+        <div class="column left"></div>
+        <div class="column middle">
+            <div class="row">
+              {% for product in products %}
+                <div class="col-sm-4 d-flex">
+                  <div class="card m-4 d-flex">
+                    <div class="card-body ">
+                      <h5 class="card-title">{{product.name}}</h5>
+                      <img class="card-img" src="{{product.img.url}}" alt="nopes">
+                      
+                      <a href="{% url 'content' product.name  %}" class="btn btn-primary">Buy Now</a>
+                    </div>
+                  </div>
+                </div>
+                
+                  {% endfor %}
+              </div>
+        
+                
+    
+              
+        </div>
+
+        <div class="column right"></div>
+
+
+    </div>
+    
+{% endblock content%}

@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div style="background:linear-gradient(rgb(65, 124, 148),rgb(226, 231, 235))", class=" card p-2">
+    
+    <h1 style="color:rgba(21, 23, 54, 0.828);">{{i.title}} </h1>
+    <br>
+    <p style="background:linear-gradient(rgb(10, 19, 1),rgb(70, 25, 25)); padding:10px; margin:auto; color:darkkhaki">{{i.content}}</p>
+    <br>
+    <h5>Author:{{i.author}}</h5>
+    <h5>Date:{{i.created_on}}</h5>
+    <h5 style="text-transform: uppercase;">Category:{{i.category}}</h5>
+    <a href="{% url 'delete' i.title %}" class="btn border border-danger m-2" ><h5 class="card-title">Delete Blog</h5> </a>
+    <a href="{% url 'update' i.title %}" class="btn border border-primary  m-2" ><h5 class="card-title"></h5>Update Blog</h5> </a>
+    
+
+</div>
+{% endblock content%}

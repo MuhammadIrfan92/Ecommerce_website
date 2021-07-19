@@ -1,0 +1,22 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .img{
+        height: 40%;
+        width: 40%;
+    }
+</style>
+<div style="background:linear-gradient(rgb(65, 124, 148),rgb(226, 231, 235))", class=" card p-2">
+    <img class="img" src="{{data.img.url}}" alt="nopes">
+    <h1 style="color:rgba(21, 23, 54, 0.828);">{{data.name}} </h1>
+    <h5>Price:{{data.price}}</h5>
+    <br>
+    <p style="background:linear-gradient(rgb(230, 236, 223),rgb(236, 230, 230)); padding:10px; margin:auto; color:rgb(19, 18, 7)">{{data.des}}</p>
+    <br>
+    <a href="{% url 'checkout' data.name  %}" class="btn btn-secondary border border-primary m-2"><h5>Checkout</h5></a>
+    
+    
+</div>
+{% endblock content%}

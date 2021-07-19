@@ -1,0 +1,65 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .img {
+        height: 40%;
+        width: 40%;
+    }
+
+    .column {
+        float: left;
+    }
+
+    .left {
+        width: 10%;
+    }
+
+    .right {
+        width: 25%;
+    }
+
+    .middle {
+        width: 60%;
+    }
+</style>
+<div class="row">
+
+    <div class="column left"></div>
+    <div class="column middle">
+        <form action="">
+            {% csrf_token %}
+            
+            <h5>Name</h5>
+            <input class="inputbox" name="title" type="text" placeholder="Name">
+            <h5>Address</h5>
+            <input class="inputbox" name="author" type="text" placeholder="Address">
+            <h5>Email</h5>
+            <input class="inputbox" name="author" type="text" placeholder="Email">
+            <h5>Mobile Number</h5>
+            <input class="inputbox" name="author" type="text" placeholder="Mobile Number">
+           
+            <br>
+            <input type="submit" value="BUY" class="btn btn-primary m-2 p-2 ">
+        </form>
+    </div>
+
+    <div class="column right">
+        <div style="background:linear-gradient(rgb(65, 124, 148),rgb(226, 231, 235))" , class=" card p-2">
+            <img class="img" src="{{data.img.url}}" alt="nopes">
+            <h1 style="color:rgba(21, 23, 54, 0.828);">{{data.name}} </h1>
+            <h5>Price:{{data.price}}</h5>
+            <br>
+
+            <br>
+
+
+
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content%}
