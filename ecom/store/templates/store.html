@@ -1,7 +1,10 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
+
+{% load cart %}
 <style>
+
     .column {
         float: left;
       }
@@ -13,27 +16,96 @@
       .middle {
         width: 80%;
       }
-      .card-img{
+      .card{
+        
         width: 100%;
-        height: 70%;
-        object-fit: cover;
-    }
+        height: 100%;
+        color: #fff;
+
+       background:  linear-gradient(-45deg, #8f4f67,#529cb9,#694388);
+       background-size: 400% 400%;
+       position: relative;
+       animation: change 10s ease-in-out infinite;
+
+      }
+
+  
+
+      @keyframes change {
+        0%{
+          background-position: 0 50%;
+        }
+        50% {
+         background-position: 100% 50%;
+       }
+       100% {
+         background-position: 0 50%;
+       }
+        
+      }
+
+      
 </style>
 
     <div class="row">
         
         <div class="column left"></div>
         <div class="column middle">
-            <div class="row">
+            <div  class="row">
               {% for product in products %}
-                <div class="col-sm-4 d-flex">
-                  <div class="card m-4 d-flex">
-                    <div class="card-body ">
-                      <h5 class="card-title">{{product.name}}</h5>
-                      <img class="card-img" src="{{product.img.url}}" alt="nopes">
+                <div class="col-sm-4 p-2 d-flex" id="{{product.id}}">
+                  <div class="card ">
+                    <div  id="card" class="card-body  rounded">
+                      <h5 style="background:  linear-gradient(-45deg, #b45a4e, #8f4f67,#529cb9,#694388);" class="card-title m-1 p-1  rounded">{{product.name}}</h5>
+                      <img class="card-img rounded p-4" src="{{product.img.url}}" alt="nopes">
+                      <div class="col-lg-4 ">
+                      <h5 class="card-title  m-1 p-1 bg-info rounded">₨.{{product.price}}/-</h5>
+                        {% if request.session.cart %}
+                        {{product | cart_check:request.session.cart}}
+                        {% endif %}
+
+                      </div>
+
                       
-                      <a href="{% url 'content' product.name  %}" class="btn btn-primary m-2 p-2">Buy Now</a>
+                     <!-- <a href="{% url 'content' product.name  %}" class="btn btn-primary m-2 p-2">Buy Now</a>--> 
                     </div>
+                    <div class="card-footer row nu-gutters">
+                      
+                      {% if product|cart_check:request.session.cart  %}
+                      <div  class="row nu-gutters  ">
+
+                        <form action="/#{{product.id}}" class="col-2" method="POST">
+                          {% csrf_token%}
+                      <input hidden type="text" name="product" value="{{product.id}}" class="p-2">
+                      <input hidden type="text" name="remove" value='True' class="p-2">
+                          
+                          <input type="submit" value=" - " name="" class=" btn btn-block btn-secondary rounded">
+                        </form>
+                        <div class="text-center col"> {{product|cart_count:request.session.cart}} in cart</div>
+                        <form action="/#{{product.id}}" class="col-2" method="POST">
+                          {% csrf_token%}
+                      <input hidden type="text" name="product" value="{{product.id}}" class="p-2">
+
+                          <input type="submit" value=" + " name="" class=" btn btn-block btn-secondary rounded">
+                        </form>
+  
+                      </div>                      
+
+                      {% else %}
+                      
+                      <form action="/#{{product.id}}" method="POST" class="btn-block">
+                        {% csrf_token%}
+                      <input hidden type="text" name="product" value="{{product.id}}" class="p-2">
+                        
+                      <input type="submit" class="float-right btn btn-light border form-control " value="Add To Cart">
+
+                        
+                    </form>
+                    
+
+                    {% endif %}
+                    </div>
+
                   </div>
                 </div>
                 
@@ -49,5 +121,7 @@
 
 
     </div>
+
+
     
 {% endblock content%}

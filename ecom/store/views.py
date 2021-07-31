@@ -1,15 +1,61 @@
+from django.http import request
 from django.shortcuts import render,HttpResponse,redirect
 from .models import *
 from django.contrib.auth.hashers import PBKDF2SHA1PasswordHasher, make_password, check_password
 from django.views import View
+from .models import *
 # Create your views here.
 
 
+class Main(View):
+    def get(self,request):
+        cart = request.session.get('cart')
+        if not cart:
+            request.session['cart'] = {}
+        products = Product.objects.all()
+        context ={'products':products}
+        print(request.session.get('customer_email'))
+        return render(request,'store.html',context)
 
-def main(request):
-    products = Product.objects.all()
-    context ={'products':products}
-    return render(request,'store.html',context)
+    def post(self,request):
+        product = request.POST['product']
+        remove = request.POST.get('remove')
+        print(remove)
+        
+
+        cart = request.session.get('cart')
+        
+        if cart:
+            quantity= cart.get(product)
+           
+            if quantity:
+                if remove:
+                    if quantity<=1:
+                        cart.pop(product)
+                    else:
+                        cart[product] = quantity-1
+                    
+                else:
+                    cart[product] = quantity+1
+
+
+                
+            else:
+                cart[product] = 1            
+        else:
+            cart = {}
+            cart[product] = 1
+
+        
+        request.session['cart'] = cart
+        print(request.session['cart'] )
+        return redirect('main')
+        
+        
+        
+
+
+
 
 
 def content(request,header):
@@ -99,13 +145,14 @@ class Login(View):
         email = request.POST['email']
         password = request.POST['password']
         customer= Customer.getCustomer(email)
-        print(customer)
-        print(type(customer))
         error_message = None
 
         if customer:
             flag = check_password(password,customer.password)
             if flag:
+                request.session['customer_id']= customer.id
+                request.session['customer_email']= customer.email
+                
                 return redirect('main')
             else:
                 error_message = 'Email or Password invalid !'
@@ -116,4 +163,14 @@ class Login(View):
         return render(request,'login.html',{'error':error_message})
 
 
+class Cart(View):
+    def get(self,request):
+        ids = (list(request.session.get('cart').keys()))
+        products=Product._get_products_by_id(ids)
+        print(products)
+        return render(request,'cart.html',{'products':products})
 
+
+def logout(request):
+    request.session.clear()
+    return redirect('login')
