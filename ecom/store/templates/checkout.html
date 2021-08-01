@@ -53,7 +53,7 @@
                         id="" class="form-control form-control-sm" placeholder="+923121234567">
                     </div>
                     <input hidden type="text" value="Products: {{products|total_items:request.session.cart}}" name="total_products">
-                    <input hidden type="text" value="Bill: ₨.{{products|total_price:request.session.cart}}" name="total_bill">
+                    <input hidden type="text" value="Bill: ₨.{{products|total_price:request.session.cart}}/-" name="total_bill">
 
                     <div class="form-group p-3">
                         <input class="btn btn-sm btn-info" type="submit" value="Confirm Checkout">
