@@ -1,23 +1,16 @@
+from django.db.models.fields import EmailField
 from django.http import request
 from django.shortcuts import render,HttpResponse,redirect
 from .models import *
 from django.contrib.auth.hashers import PBKDF2SHA1PasswordHasher, make_password, check_password
 from django.views import View
+from django.core.mail import send_mail
 from .models import *
 # Create your views here.
 
 
-class Main(View):
-    def get(self,request):
-        cart = request.session.get('cart')
-        if not cart:
-            request.session['cart'] = {}
-        products = Product.objects.all()
-        context ={'products':products}
-        print(request.session.get('customer_email'))
-        return render(request,'store.html',context)
-
-    def post(self,request):
+def main(request):
+    if request.method=='POST':
         product = request.POST['product']
         remove = request.POST.get('remove')
         print(remove)
@@ -50,14 +43,16 @@ class Main(View):
         request.session['cart'] = cart
         print(request.session['cart'] )
         return redirect('main')
+    else:
+        cart = request.session.get('cart')
+        if not cart:
+            request.session['cart'] = {}
+        products = Product.objects.all()
+        context ={'products':products}
+        print(request.session.get('customer_email'))
+        return render(request,'store.html',context)
         
         
-        
-
-
-
-
-
 def content(request,header):
     data=Product.objects.get(name=header)
     context = {'data':data,'header':header}
@@ -68,13 +63,13 @@ def content(request,header):
 
         
 
-def checkout(request,header):
-    data=Product.objects.get(name=header)
-    context = {'data':data,'header':header}
-    if (data):
-        return render(request,'checkout.html',context)
-    else:
-        return render(request,'store.html')
+#def checkout(request):
+    #data=Product.objects.get(name=header)
+    #context = {'data':data,'header':header}
+    #if (data):
+    #return render(request,'checkout.html')
+    #else:
+        #return render(request,'store.html')
     
 
 class Signup(View):
@@ -170,7 +165,48 @@ class Cart(View):
         print(products)
         return render(request,'cart.html',{'products':products})
 
+    def post(self,request):
+        ids = (list(request.session.get('cart').keys()))
+        products=Product._get_products_by_id(ids)
+        print(products)
+        return render(request,'cart.html',{'products':products})
+
 
 def logout(request):
     request.session.clear()
     return redirect('login')
+
+
+class Checkout(View):
+    def get(self,request):
+        ids = (list(request.session.get('cart').keys()))
+        products=Product._get_products_by_id(ids)
+        print(products)
+        return render(request,'checkout.html',{'products':products})
+
+
+    def post(self,request):
+        name = request.POST['name']
+        address = request.POST['address']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        msg_order = "Dear Customer,\n Your order details are as follows"
+        msg_deliver = "And deliver credentials are as follows"
+        
+        total_products = request.POST['total_products']
+        total_bill = request.POST['total_bill']
+        body =msg_order + '\n' + total_products + '\n' + total_bill+'\n' +msg_deliver+'\n' + name + '\n' + address + '\n' + email + '\n' + phone + '\n' 
+
+        print(body)
+        
+        if send_mail('E-buy Order Confirmation',body,'django78692@gmail.com',[email], fail_silently=False):
+            print('Success')
+            request.session.clear()
+            return redirect('main')
+        else:
+            print("Failed")
+            return redirect('checkout')
+        
+
+
+
