@@ -1,12 +1,43 @@
 from django.db.models.fields import EmailField
 from django.http import request
 from django.shortcuts import render,HttpResponse,redirect
+from django.views.generic.base import TemplateView
 from .models import *
 from django.contrib.auth.hashers import PBKDF2SHA1PasswordHasher, make_password, check_password
 from django.views import View
 from django.core.mail import send_mail
 from .models import *
+import stripe
+from django.conf import settings
+import datetime
 # Create your views here.
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+class StipeApi(TemplateView):
+    template_name = "stripe.html"
+    def get_context_data(self,**kwargs):
+        context = super().get_context_data(**kwargs)
+       # print(datetime.datetime.now(),"before key call",context)
+        context['key'] = settings.STRIPE_PUBLISHABLE_KEY
+        #print(datetime.datetime.now(),"after key call",context)
+
+        return context 
+
+
+    
+def charge(request):
+    if request.method == 'POST':
+        #total_qimat = request.POST['total_qimat']
+        charge = stripe.Charge.create(
+            amount = 500,
+            currency = 'inr',
+            description = "Payment Gateway",
+            source = request.POST['stripeToken'],
+            shipping = {"address":{'city':'Lahore',"country":'Pakistan'},"name":"some name"}
+
+        )
+        print("stripe token is",request.POST['stripeToken'])
+        return render(request,'charge.html')
 
 
 def main(request):
@@ -177,15 +208,24 @@ def logout(request):
     return redirect('login')
 
 
-class Checkout(View):
-    def get(self,request):
+def checkout(request,):
+    pass
+
+
+class Checkout(StipeApi,TemplateView):
+
+    def get(self,request,**kwargs):
+        context=super().get_context_data(**kwargs)
+        #return context
+        print("Get hello")
         ids = (list(request.session.get('cart').keys()))
         products=Product._get_products_by_id(ids)
         print(products)
-        return render(request,'checkout.html',{'products':products})
-
+        return render(request,'checkout.html',{'products':products,"context":context})
+ 
 
     def post(self,request):
+
         name = request.POST['name']
         address = request.POST['address']
         email = request.POST['email']
@@ -199,14 +239,33 @@ class Checkout(View):
 
         print(body)
         
-        if send_mail('E-buy Order Confirmation',body,'django78692@gmail.com',[email], fail_silently=False):
+        if send_mail('E-buy Order Confirmation',body,'django7869292@gmail.com',[email], fail_silently=False):
             print('Success')
+            charge = stripe.Charge.create(
+            amount = request.POST['total_charges'],
+            currency = 'inr',
+            description = "Payment Gateway",
+            source = request.POST['stripeToken'],
+            shipping = {"address":{'city':'Lahore',"country":'Pakistan'},"name":"some name"}
+            )
             request.session.clear()
             return redirect('main')
         else:
             print("Failed")
-            return redirect('checkout')
+            return redirect('checkout') 
         
 
 
 
+""" def charge(request):
+    if request.method == 'POST':
+        #total_qimat = request.POST['total_qimat']
+        charge = stripe.Charge.create(
+            amount = 500,
+            currency = 'inr',
+            description = "Payment Gateway",
+            source = request.POST['stripeToken'],
+            
+
+        )
+        return render(request,'charge.html') """

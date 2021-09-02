@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9**wzm7p4@yx^otv-_%i8b&tqn(4b&q=r7ruoxg)7z!h1oqx60'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -39,7 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',
+        # The following apps are required:
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
+
+SITE_ID=1 #SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,6 +91,15 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = [
+    
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+    
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -133,8 +151,11 @@ MEDIA_ROOT =os.path.join(BASE_DIR,'static/images')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST_USER='django78692@gmail.com'
+EMAIL_HOST_USER='django7869292@gmail.com'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT= 587
 EMAIL_USE_TLS=True
-EMAIL_HOST_PASSWORD = " "
+EMAIL_HOST_PASSWORD = "Django124!"
+
+STRIPE_SECRET_KEY = "sk_test_51JUabBSC5cRAn9dZZKK7qpHXIWXIcHTcuQPV7c4HELj4ZggFcYhCUaSuGY367Tvx58VGxbklHDFcloEycKzB5fLO00cUQSFOTt"
+STRIPE_PUBLISHABLE_KEY = "pk_test_51JUabBSC5cRAn9dZbzrkGNiJ0l3Ry1KGo3NN9hoCG6BZYA8hPmM4mLydn3LeS3wVgv6sTWQLdCDget8t5F7gE0Vg00GusThOjU"

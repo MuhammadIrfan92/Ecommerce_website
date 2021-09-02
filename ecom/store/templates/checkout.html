@@ -54,9 +54,27 @@
                     </div>
                     <input hidden type="text" value="Products: {{products|total_items:request.session.cart}}" name="total_products">
                     <input hidden type="text" value="Bill: ₨.{{products|total_price:request.session.cart}}/-" name="total_bill">
+                    <input hidden type="text" value="{{products|total_price:request.session.cart}}" name="total_charges">
+
 
                     <div class="form-group p-3">
                         <input class="btn btn-sm btn-info" type="submit" value="Confirm Checkout">
+                        
+                      
+                     <form  action="{% url 'charge' %}" method="POST">
+                            {% csrf_token %}
+                            
+                            <input hidden type="text" value="{{products|total_price:request.session.cart}}" name="total_qimat">
+                            <script hidden src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                            data-key = "{{ context.key }}"
+                            data-description = "Payment Gateway"
+                            data-amount = "{{products|total_price:request.session.cart}}"
+                            data-locale="auto"
+                            >
+                                
+                            </script>
+                        </form> 
+                    
                     </div>
                 </form>
             </div>
